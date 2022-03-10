@@ -48,6 +48,7 @@ namespace RecordLookupByGuid
             this.labelNoResults = new System.Windows.Forms.Label();
             this.panelMainContainer = new System.Windows.Forms.Panel();
             this.linkLabelFoundRecord = new System.Windows.Forms.LinkLabel();
+            this.label4 = new System.Windows.Forms.Label();
             this.toolStripMenu.SuspendLayout();
             this.groupBoxSettings.SuspendLayout();
             this.panelMainContainer.SuspendLayout();
@@ -70,9 +71,9 @@ namespace RecordLookupByGuid
             this.toolStripButtonLoadData.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonLoadData.Image")));
             this.toolStripButtonLoadData.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonLoadData.Name = "toolStripButtonLoadData";
-            this.toolStripButtonLoadData.Size = new System.Drawing.Size(102, 28);
-            this.toolStripButtonLoadData.Text = "Load Entities";
-            this.toolStripButtonLoadData.Click += new System.EventHandler(this.ToolStripButtonLoadData_Click);
+            this.toolStripButtonLoadData.Size = new System.Drawing.Size(112, 28);
+            this.toolStripButtonLoadData.Text = "Reload Entities";
+            this.toolStripButtonLoadData.Click += new System.EventHandler(this.ToolStripButtonReloadEntities_Click);
             // 
             // labelEnterGuid
             // 
@@ -112,6 +113,7 @@ namespace RecordLookupByGuid
             // groupBoxSettings
             // 
             this.groupBoxSettings.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.groupBoxSettings.Controls.Add(this.label4);
             this.groupBoxSettings.Controls.Add(this.checkBoxCustomEntitiesOnly);
             this.groupBoxSettings.Controls.Add(this.checkBoxManagedEntities);
             this.groupBoxSettings.Controls.Add(this.textBoxExcludeFilter);
@@ -122,7 +124,7 @@ namespace RecordLookupByGuid
             this.groupBoxSettings.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.groupBoxSettings.Location = new System.Drawing.Point(16, 116);
             this.groupBoxSettings.Name = "groupBoxSettings";
-            this.groupBoxSettings.Size = new System.Drawing.Size(567, 212);
+            this.groupBoxSettings.Size = new System.Drawing.Size(567, 231);
             this.groupBoxSettings.TabIndex = 5;
             this.groupBoxSettings.TabStop = false;
             this.groupBoxSettings.Text = "Settings";
@@ -131,7 +133,7 @@ namespace RecordLookupByGuid
             // 
             this.checkBoxCustomEntitiesOnly.AutoSize = true;
             this.checkBoxCustomEntitiesOnly.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxCustomEntitiesOnly.Location = new System.Drawing.Point(15, 144);
+            this.checkBoxCustomEntitiesOnly.Location = new System.Drawing.Point(15, 170);
             this.checkBoxCustomEntitiesOnly.Name = "checkBoxCustomEntitiesOnly";
             this.checkBoxCustomEntitiesOnly.Size = new System.Drawing.Size(122, 17);
             this.checkBoxCustomEntitiesOnly.TabIndex = 6;
@@ -143,7 +145,7 @@ namespace RecordLookupByGuid
             // 
             this.checkBoxManagedEntities.AutoSize = true;
             this.checkBoxManagedEntities.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxManagedEntities.Location = new System.Drawing.Point(15, 167);
+            this.checkBoxManagedEntities.Location = new System.Drawing.Point(15, 193);
             this.checkBoxManagedEntities.Name = "checkBoxManagedEntities";
             this.checkBoxManagedEntities.Size = new System.Drawing.Size(149, 17);
             this.checkBoxManagedEntities.TabIndex = 5;
@@ -154,7 +156,7 @@ namespace RecordLookupByGuid
             // textBoxExcludeFilter
             // 
             this.textBoxExcludeFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxExcludeFilter.Location = new System.Drawing.Point(15, 107);
+            this.textBoxExcludeFilter.Location = new System.Drawing.Point(15, 133);
             this.textBoxExcludeFilter.Name = "textBoxExcludeFilter";
             this.textBoxExcludeFilter.Size = new System.Drawing.Size(504, 20);
             this.textBoxExcludeFilter.TabIndex = 4;
@@ -165,7 +167,7 @@ namespace RecordLookupByGuid
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(12, 90);
+            this.label2.Location = new System.Drawing.Point(12, 116);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(102, 13);
             this.label2.TabIndex = 3;
@@ -175,7 +177,7 @@ namespace RecordLookupByGuid
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(12, 39);
+            this.label1.Location = new System.Drawing.Point(12, 65);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(61, 13);
             this.label1.TabIndex = 2;
@@ -184,7 +186,7 @@ namespace RecordLookupByGuid
             // textBoxIncludeFilter
             // 
             this.textBoxIncludeFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxIncludeFilter.Location = new System.Drawing.Point(15, 55);
+            this.textBoxIncludeFilter.Location = new System.Drawing.Point(15, 81);
             this.textBoxIncludeFilter.Name = "textBoxIncludeFilter";
             this.textBoxIncludeFilter.Size = new System.Drawing.Size(504, 20);
             this.textBoxIncludeFilter.TabIndex = 1;
@@ -244,6 +246,17 @@ namespace RecordLookupByGuid
             this.linkLabelFoundRecord.Visible = false;
             this.linkLabelFoundRecord.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabelFoundRecord_LinkClicked);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(12, 34);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(453, 13);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "To improve performance it is a good idea to limit the number of entities that has" +
+    " to be searched.";
+            // 
             // MyPluginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -281,5 +294,6 @@ namespace RecordLookupByGuid
         private System.Windows.Forms.Label labelNoResults;
         private System.Windows.Forms.Panel panelMainContainer;
         private LinkLabel linkLabelFoundRecord;
+        private System.Windows.Forms.Label label4;
     }
 }

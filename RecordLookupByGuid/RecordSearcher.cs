@@ -4,8 +4,6 @@ using Microsoft.Xrm.Sdk.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RecordLookupByGuid
 {
@@ -28,8 +26,6 @@ namespace RecordLookupByGuid
                     ReturnResponses = true
                 },
                 Requests = new OrganizationRequestCollection()
-                {
-                }
             };
 
             foreach (CrmEntity entity in entities)
@@ -52,7 +48,9 @@ namespace RecordLookupByGuid
                     {
                         EntityReference entityRef = foundRecord.ToEntityReference();
                         CrmEntity entityMeta = entities.FirstOrDefault(e => e.LogicalName == foundRecord.LogicalName);
-                        entityRef.Name = foundRecord.Contains(entityMeta.PrimaryNameAttribute) ? foundRecord.GetAttributeValue<string>(entityMeta.PrimaryNameAttribute) : entityRef.Name;
+                        entityRef.Name = foundRecord.Contains(entityMeta.PrimaryNameAttribute) 
+                            ? foundRecord.GetAttributeValue<string>(entityMeta.PrimaryNameAttribute)
+                            : entityRef.Id.ToString();
                         return entityRef;
                     }
                 }

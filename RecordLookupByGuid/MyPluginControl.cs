@@ -20,12 +20,15 @@ namespace RecordLookupByGuid
         public MyPluginControl()
         {
             InitializeComponent();
-            this.labelNoResults.Visible = false;
-            this.linkLabelFoundRecord.Visible = false;
             this.panelMainContainer.Enabled = false;
         }
 
         private void MyPluginControl_Load(object sender, EventArgs e)
+        {
+            LoadSettings();
+        }
+
+        private void LoadSettings()
         {
             if (!SettingsManager.Instance.TryLoad(GetType(), out settings))
             {
@@ -34,7 +37,7 @@ namespace RecordLookupByGuid
                     IncludeFilter = "*",
                     ExcludeFilter = "msdyn*, msfp*",
                     ExcludeManagedEntities = false,
-                    CustomEntitiesOnly = true
+                    CustomEntitiesOnly = false
                 };
             }
             this.textBoxIncludeFilter.Text = this.settings.IncludeFilter;
@@ -45,26 +48,24 @@ namespace RecordLookupByGuid
 
         public override void ClosingPlugin(PluginCloseInfo info)
         {
-            SettingsManager.Instance.Save(GetType(), settings);
+            SettingsManager.Instance.Save(this.GetType(), settings);
         }
 
-        //When connection is changed in XrmToolbox
         public override void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName, object parameter)
         {
             base.UpdateConnection(newService, detail, actionName, parameter);
 
             this.entities = new List<CrmEntity>();
             this.panelMainContainer.Enabled = false;
+            ExecuteMethod(this.LoadEntitiesFromCrm);
         }
 
-        //When used click on "load data from crm"
-        private void ToolStripButtonLoadData_Click(object sender, EventArgs e)
+        private void ToolStripButtonReloadEntities_Click(object sender, EventArgs e)
         {
-            ExecuteMethod(this.LoadMetaData);
+            ExecuteMethod(this.LoadEntitiesFromCrm);
         }
 
-        //Fetch metadata from CRM
-        private void LoadMetaData()
+        private void LoadEntitiesFromCrm()
         {
             WorkAsync(new WorkAsyncInfo
             {
@@ -90,31 +91,31 @@ namespace RecordLookupByGuid
 
         private void ButtonSearch_Click(object sender, EventArgs e)
         {
-            ExecuteMethod(SearchAndOpen);
+            ExecuteMethod(PerformSearchAndOpenRecord);
         }
 
         private void TextBoxSearchTerm_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
-                ExecuteMethod(SearchAndOpen);
+                ExecuteMethod(PerformSearchAndOpenRecord);
             }
         }
 
-        private void SearchAndOpen()
+        private void PerformSearchAndOpenRecord()
         {
             this.labelNoResults.Visible = false;
             this.linkLabelFoundRecord.Visible = false;
 
             if (!Guid.TryParse(this.textBoxSearchTerm.Text, out Guid recordGuid))
             {
-                MessageBox.Show("Not a valid GUID", "Error");
+                MessageBox.Show("Record id not a valid GUID", "Error");
                 return;
             }
 
             WorkAsync(new WorkAsyncInfo
             {
-                Message = "Searching",
+                Message = $"Searching...",
                 Work = (worker, args) =>
                 {
                     RecordSearcher searcher = new RecordSearcher(this.Service);
@@ -146,8 +147,9 @@ namespace RecordLookupByGuid
 
         private void OpenFoundRecord()
         {
-            string url = $"{this.ConnectionDetail.WebApplicationUrl}main.aspx?etn={foundRecord.LogicalName}&id=%7b{foundRecord.Id}%7d&pagetype=entityrecord";
-            ProcessStartInfo sInfo = new ProcessStartInfo(url);
+            Uri baseUrl = new Uri(this.ConnectionDetail.WebApplicationUrl);
+            Uri recordUrl = new Uri(baseUrl, $"main.aspx?etn={foundRecord.LogicalName}&id=%7b{foundRecord.Id}%7d&pagetype=entityrecord");
+            ProcessStartInfo sInfo = new ProcessStartInfo(recordUrl.ToString());
             Process.Start(sInfo);
         }
 
@@ -178,16 +180,16 @@ namespace RecordLookupByGuid
             }
 
             string[] includeFilters = this.SplitFilterString(this.settings.IncludeFilter);
-            entitiesFiltered = this.ApplyFilter(entitiesFiltered, includeFilters, false);
+            entitiesFiltered = this.FilterEntities(entitiesFiltered, includeFilters, FilterType.Whitelist);
 
             string[] excludeFilters = this.SplitFilterString(this.settings.ExcludeFilter);
-            entitiesFiltered = this.ApplyFilter(entitiesFiltered, excludeFilters, true);
+            entitiesFiltered = this.FilterEntities(entitiesFiltered, excludeFilters, FilterType.Blacklist);
 
             this.filteredEntities = entitiesFiltered;
             this.buttonSearch.Text = $"Search {this.filteredEntities.Count} Entities";
         }
 
-        private List<CrmEntity> ApplyFilter(List<CrmEntity> entities, string[] filters, bool removeIfMatch)
+        private List<CrmEntity> FilterEntities(List<CrmEntity> entities, string[] filters, FilterType filterType)
         {
             string[] filtersAsRegex = filters.Select(filter => "^" + Regex.Escape(filter).Replace("\\*", ".*") + "$").ToArray();
 
@@ -196,13 +198,11 @@ namespace RecordLookupByGuid
             {
                 bool matchesFilter = filtersAsRegex.Any(filterPattern => Regex.IsMatch(entity.LogicalName, filterPattern, RegexOptions.IgnoreCase));
 
-                //Exclude/blacklist filter
-                if (matchesFilter && removeIfMatch)
+                if (filterType == FilterType.Blacklist && matchesFilter)
                 {
                     result.Remove(entity);
                 }
-                //Include/whitelist filter
-                else if (!matchesFilter && !removeIfMatch)
+                else if (filterType == FilterType.Whitelist && !matchesFilter && filters.Length > 0)
                 {
                     result.Remove(entity);
                 }

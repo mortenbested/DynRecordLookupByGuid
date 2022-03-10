@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Record Lookup By Guid")]
-[assembly: AssemblyDescription("A plugin to search for records using only a guid")]
+[assembly: AssemblyDescription("A plugin to find a record using a guid")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Morten Bested")]
-[assembly: AssemblyProduct("RecordLookupById")]
+[assembly: AssemblyProduct("RecordLookupByGuid")]
 [assembly: AssemblyCopyright("Copyright © 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("6b37cd27-fdc3-4443-8233-ff5ca2354657")]
+[assembly: Guid("61094842-7b45-4dfb-ae7a-178eab7e62b0")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.2022.3.6")]
-[assembly: AssemblyFileVersion("1.2022.3.6")]
+[assembly: AssemblyVersion("1.2022.3.10")]
+[assembly: AssemblyFileVersion("1.2022.3.10")]
